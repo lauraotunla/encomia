@@ -1,0 +1,4064 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ENCOMIA — Online Printing Services</title>
+  <meta name="description"
+    content="Design online and we'll print and deliver. Business cards, banners, flyers, packaging and more — self-service printing made easy." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Archivo:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #0d1422;
+      --bg2: #16202f;
+      --bg3: #1c2a3c;
+      --accent: #c9a227;
+      --accent-h: #e8c84a;
+      --accent-dim: rgba(201, 162, 39, .14);
+      --accent-glow: rgba(201, 162, 39, .38);
+      --text: #fff;
+      --text2: rgba(255, 255, 255, .68);
+      --text3: rgba(255, 255, 255, .38);
+      --border: rgba(255, 255, 255, .08);
+      --borderA: rgba(201, 162, 39, .28);
+      --r: 16px;
+      --tr: .3s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    html {
+      scroll-behavior: auto;
+      font-size: 16px
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Archivo', sans-serif;
+      overflow-x: hidden;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      line-height: 1.12
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    img {
+      display: block;
+      max-width: 100%
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: #000
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #080d14
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--accent), #7a5c0a);
+      border-radius: 3px
+    }
+
+    /* ===== SCROLL PROGRESS ===== */
+    #sp {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, #7a5c0a, var(--accent), #f0d060);
+      z-index: 10000;
+      box-shadow: 0 0 8px var(--accent-glow);
+      transition: width .04s linear
+    }
+
+    /* ===== STARSCAPE ===== */
+    #stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .5
+    }
+
+    /* ===== LOADER ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      transition: opacity .6s, visibility .6s
+    }
+
+    #loader.out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none
+    }
+
+    .ld-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      letter-spacing: .12em
+    }
+
+    .ld-logo em {
+      color: var(--accent);
+      font-style: normal
+    }
+
+    .ld-track {
+      width: 200px;
+      height: 3px;
+      background: rgba(255, 255, 255, .1);
+      border-radius: 99px;
+      overflow: hidden
+    }
+
+    .ld-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #7a5c0a, var(--accent), #f0d060);
+      border-radius: 99px;
+      box-shadow: 0 0 10px var(--accent-glow);
+      transition: width .08s ease
+    }
+
+    .ld-txt {
+      font-size: .72rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--text3)
+    }
+
+    /* ===== NAVBAR ===== */
+    #nav {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 1440px;
+      z-index: 1000;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 0;
+      transition: all .45s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    #nav.pill {
+      max-width: 880px;
+      background: rgba(13, 20, 34, .9);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--borderA);
+      border-radius: 99px;
+      padding: 0 26px;
+      box-shadow: 0 4px 28px rgba(0, 0, 0, .45), 0 0 0 1px var(--borderA)
+    }
+
+    .nav-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      white-space: nowrap
+    }
+
+    .nav-brand em {
+      color: var(--accent);
+      font-style: normal
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2px;
+      list-style: none
+    }
+
+    .nav-links a {
+      padding: 7px 13px;
+      font-size: .8rem;
+      font-weight: 500;
+      letter-spacing: .02em;
+      color: var(--text2);
+      border-radius: 99px;
+      transition: var(--tr)
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, .07)
+    }
+
+    .nav-cta {
+      padding: 9px 20px;
+      background: var(--accent);
+      color: #000;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border-radius: 99px;
+      border: none;
+      cursor: pointer;
+      transition: var(--tr);
+      box-shadow: 0 2px 14px var(--accent-glow);
+      white-space: nowrap
+    }
+
+    .nav-cta:hover {
+      background: var(--accent-h);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(201, 162, 39, .55)
+    }
+
+    /* ===== HERO ===== */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      z-index: 1
+    }
+
+    /* product mosaic grid */
+    .hero-mosaic {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 10px;
+      padding: 10px;
+      opacity: .28;
+      pointer-events: none
+    }
+
+    .mosaic-tile {
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative
+    }
+
+    .mt1 {
+      background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+    }
+
+    /* business cards */
+    .mt2 {
+      background: linear-gradient(135deg, #3d1a4f, #7b2d9e);
+    }
+
+    /* stationery */
+    .mt3 {
+      background: linear-gradient(135deg, #1a3d2b, #2e7d4f);
+    }
+
+    /* packaging */
+    .mt4 {
+      background: linear-gradient(135deg, #4a2000, #a04500);
+    }
+
+    /* banners */
+    .mt5 {
+      background: linear-gradient(135deg, #1a1a4f, #2e2e8e);
+    }
+
+    /* flyers */
+    .mt6 {
+      background: linear-gradient(135deg, #3d1a1a, #8e2d2d);
+    }
+
+    /* promo */
+    .mt7 {
+      background: linear-gradient(135deg, #1a3040, #2d5d70);
+    }
+
+    /* clothing */
+    .mt8 {
+      background: linear-gradient(135deg, #2e2200, #7a5500);
+    }
+
+    /* labels */
+    .mt9 {
+      background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+    }
+
+    /* notebooks */
+    .mt10 {
+      background: linear-gradient(135deg, #0e2840, #1a4f7a);
+    }
+
+    /* postcards */
+    .mt11 {
+      background: linear-gradient(135deg, #2e0e40, #6a1e9a);
+    }
+
+    /* invitations */
+    .mt12 {
+      background: linear-gradient(135deg, #0e3020, #1a6040);
+    }
+
+    /* packaging 2 */
+    /* SVG product shapes inside tiles */
+    .mosaic-tile svg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    /* dark overlay to blend mosaic */
+    .hero-mosaic-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(13, 20, 34, .55) 0%, rgba(13, 20, 34, .92) 70%, rgba(13, 20, 34, .98) 100%);
+      pointer-events: none;
+      z-index: 1
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(201, 162, 39, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(201, 162, 39, .035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 20%, transparent 100%);
+      pointer-events: none;
+      z-index: 2
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      text-align: center;
+      padding: 130px 24px 100px;
+      max-width: 820px
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--accent-dim);
+      border: 1px solid var(--borderA);
+      border-radius: 99px;
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 24px
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite
+    }
+
+    .hero-h1 {
+      font-size: clamp(2.6rem, 6.5vw, 5.2rem);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.06;
+      margin-bottom: 22px
+    }
+
+    .hero-h1 .g {
+      color: var(--accent)
+    }
+
+    .hero-sub {
+      font-size: clamp(.95rem, 1.8vw, 1.15rem);
+      color: var(--text2);
+      max-width: 580px;
+      margin: 0 auto 16px;
+      line-height: 1.65
+    }
+
+    .hero-sub2 {
+      font-size: .88rem;
+      color: var(--text3);
+      margin-bottom: 40px
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+
+    .btn-p {
+      padding: 15px 34px;
+      background: var(--accent);
+      color: #000;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .9rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border-radius: 99px;
+      border: none;
+      cursor: pointer;
+      transition: var(--tr);
+      box-shadow: 0 4px 22px var(--accent-glow)
+    }
+
+    .btn-p:hover {
+      background: var(--accent-h);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(201, 162, 39, .5)
+    }
+
+    .btn-s {
+      padding: 15px 34px;
+      background: transparent;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border-radius: 99px;
+      border: 1px solid rgba(255, 255, 255, .22);
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .btn-s:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim)
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      color: var(--text3);
+      font-size: .7rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      animation: bounce 2.2s ease-in-out infinite;
+      z-index: 3
+    }
+
+    .scroll-mouse {
+      width: 20px;
+      height: 32px;
+      border: 1.5px solid rgba(255, 255, 255, .22);
+      border-radius: 10px;
+      position: relative
+    }
+
+    .scroll-mouse::after {
+      content: '';
+      position: absolute;
+      width: 3px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 2px;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: sdot 2s ease-in-out infinite
+    }
+
+    /* ===== VALUE PROPS BAR ===== */
+    #vbar {
+      position: relative;
+      z-index: 1;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .vbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0
+    }
+
+    .vbar-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 22px 32px;
+      border-right: 1px solid var(--border)
+    }
+
+    .vbar-item:last-child {
+      border-right: none
+    }
+
+    .vbar-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      background: var(--accent-dim);
+      border: 1px solid var(--borderA);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem
+    }
+
+    .vbar-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .9rem;
+      font-weight: 600
+    }
+
+    .vbar-sub {
+      font-size: .78rem;
+      color: var(--text2)
+    }
+
+    /* ===== SCROLL ANIMATION ===== */
+    #sa {
+      position: relative;
+      height: 450vh;
+      z-index: 1
+    }
+
+    .sa-sticky {
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden
+    }
+
+    #vc {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%
+    }
+
+    .anno-wrap {
+      position: absolute;
+      inset: 0;
+      pointer-events: none
+    }
+
+    .anno {
+      position: absolute;
+      background: rgba(13, 20, 34, .88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--borderA);
+      border-radius: var(--r);
+      padding: 18px 22px;
+      min-width: 210px;
+      max-width: 265px;
+      opacity: 0;
+      transform: translateY(14px) scale(.96);
+      transition: opacity .4s ease, transform .4s ease;
+      box-shadow: 0 8px 36px rgba(0, 0, 0, .5), 0 0 0 1px var(--borderA)
+    }
+
+    .anno.vis {
+      opacity: 1;
+      transform: translateY(0) scale(1)
+    }
+
+    .anno-n {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 7px
+    }
+
+    .anno-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 5px
+    }
+
+    .anno-desc {
+      font-size: .78rem;
+      color: var(--text2);
+      line-height: 1.5;
+      margin-bottom: 9px
+    }
+
+    .anno-stat {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--accent)
+    }
+
+    .anno-sl {
+      font-size: .7rem;
+      color: var(--text3);
+      letter-spacing: .04em
+    }
+
+    .a1 {
+      top: 16%;
+      left: 4%
+    }
+
+    .a2 {
+      top: 16%;
+      right: 4%
+    }
+
+    .a3 {
+      bottom: 16%;
+      left: 4%
+    }
+
+    .a4 {
+      bottom: 16%;
+      right: 4%
+    }
+
+    /* scroll counter badge */
+    .sa-progress {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+      pointer-events: none
+    }
+
+    .sa-p-track {
+      width: 120px;
+      height: 3px;
+      background: rgba(255, 255, 255, .15);
+      border-radius: 99px;
+      overflow: hidden
+    }
+
+    .sa-p-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width .1s linear
+    }
+
+    .sa-p-txt {
+      font-size: .7rem;
+      letter-spacing: .12em;
+      color: var(--text3);
+      text-transform: uppercase;
+      white-space: nowrap
+    }
+
+    /* ===== SECTION CHROME ===== */
+    .s-label {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-align: center;
+      margin-bottom: 14px
+    }
+
+    .s-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 14px;
+      letter-spacing: -.02em
+    }
+
+    .s-sub {
+      font-size: .95rem;
+      color: var(--text2);
+      text-align: center;
+      max-width: 520px;
+      margin: 0 auto 56px;
+      line-height: 1.65
+    }
+
+    .fin {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .6s ease, transform .6s ease
+    }
+
+    .fin.vis {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .d1 {
+      transition-delay: .08s
+    }
+
+    .d2 {
+      transition-delay: .16s
+    }
+
+    .d3 {
+      transition-delay: .24s
+    }
+
+    .d4 {
+      transition-delay: .32s
+    }
+
+    .d5 {
+      transition-delay: .4s
+    }
+
+    .d6 {
+      transition-delay: .48s
+    }
+
+    /* ===== CATEGORIES ===== */
+    #cats {
+      position: relative;
+      z-index: 1;
+      padding: 88px 24px;
+      background: var(--bg2)
+    }
+
+    .cats-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 14px;
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    .cat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .cat-circle {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      border: 1.5px solid var(--border);
+      transition: var(--tr);
+      position: relative;
+      overflow: hidden
+    }
+
+    .cat-circle img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      transition: transform .4s ease
+    }
+
+    .cat-card:hover .cat-circle img {
+      transform: scale(1.1)
+    }
+
+    .cat-card:hover .cat-circle {
+      border-color: var(--accent);
+      transform: scale(1.08);
+      box-shadow: 0 0 0 3px var(--accent-dim)
+    }
+
+    .cc1 {
+      background: linear-gradient(135deg, #1b3a5c, #2d6a9e)
+    }
+
+    .cc2 {
+      background: linear-gradient(135deg, #2e0e40, #7b2d9e)
+    }
+
+    .cc3 {
+      background: linear-gradient(135deg, #1a3d2b, #2e7d4f)
+    }
+
+    .cc4 {
+      background: linear-gradient(135deg, #4a2800, #c04500)
+    }
+
+    .cc5 {
+      background: linear-gradient(135deg, #1a1a4f, #3535a0)
+    }
+
+    .cc6 {
+      background: linear-gradient(135deg, #3a0e0e, #a02020)
+    }
+
+    .cc7 {
+      background: linear-gradient(135deg, #0e2030, #1a4060)
+    }
+
+    .cc8 {
+      background: linear-gradient(135deg, #2a1a00, #8a5500)
+    }
+
+    .cat-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .75rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text2);
+      transition: var(--tr);
+      line-height: 1.3
+    }
+
+    .cat-card:hover .cat-name {
+      color: var(--accent)
+    }
+
+    /* ===== COLLECTIONS ===== */
+    #collections {
+      position: relative;
+      z-index: 1;
+      padding: 88px 24px;
+      background: var(--bg)
+    }
+
+    .collections-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    .coll-card {
+      border-radius: var(--r);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      aspect-ratio: 3/4;
+      transition: var(--tr)
+    }
+
+    .coll-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, .5)
+    }
+
+    .coll-bg {
+      position: absolute;
+      inset: 0;
+      transition: transform .5s ease
+    }
+
+    .coll-card:hover .coll-bg {
+      transform: scale(1.05)
+    }
+
+    .coll-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, .85) 0%, rgba(0, 0, 0, .2) 50%, transparent 100%)
+    }
+
+    .coll-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 20px
+    }
+
+    .coll-tag {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px
+    }
+
+    .coll-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .coll-count {
+      font-size: .75rem;
+      color: rgba(255, 255, 255, .6)
+    }
+
+    /* collection backgrounds */
+    .cb1,
+    .cb2,
+    .cb3,
+    .cb4 {
+      background-size: cover;
+      background-position: center
+    }
+
+    .coll-bg img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    /* decorative product shapes in collections */
+    .coll-art {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      left: 16px;
+      bottom: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .bcard-stack {
+      position: relative;
+      width: 100px;
+      height: 65px
+    }
+
+    .bc {
+      position: absolute;
+      width: 100px;
+      height: 62px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .2)
+    }
+
+    .bc:nth-child(1) {
+      transform: rotate(-6deg) translateY(4px)
+    }
+
+    .bc:nth-child(2) {
+      transform: rotate(-2deg) translateY(2px)
+    }
+
+    .bc:nth-child(3) {
+      background: rgba(255, 255, 255, .22);
+      transform: rotate(2deg)
+    }
+
+    .bc::after {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      opacity: .7
+    }
+
+    .banner-art {
+      width: 120px;
+      height: 40px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, rgba(201, 162, 39, .4), rgba(201, 162, 39, .15));
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent)
+    }
+
+    .box-art {
+      width: 80px;
+      height: 80px;
+      position: relative
+    }
+
+    .box-top {
+      position: absolute;
+      top: 0;
+      left: 10px;
+      width: 60px;
+      height: 20px;
+      background: rgba(255, 255, 255, .2);
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 2px 2px 0 0;
+      transform: perspective(200px) rotateX(-20deg)
+    }
+
+    .box-front {
+      position: absolute;
+      top: 16px;
+      left: 0;
+      width: 80px;
+      height: 60px;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 0 0 4px 4px
+    }
+
+    .box-front::after {
+      content: 'ENCOMIA';
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .45rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: var(--accent);
+      white-space: nowrap
+    }
+
+    .flyer-art {
+      position: relative;
+      width: 70px;
+      height: 100px;
+      border-radius: 4px;
+      background: linear-gradient(160deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .05));
+      border: 1px solid rgba(255, 255, 255, .2);
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px 8px;
+      transform: rotate(-5deg)
+    }
+
+    .flyer-line {
+      height: 4px;
+      background: rgba(255, 255, 255, .3);
+      border-radius: 2px
+    }
+
+    .flyer-line:first-child {
+      background: var(--accent);
+      opacity: .7
+    }
+
+    .flyer-line.short {
+      width: 60%
+    }
+
+    /* ===== NEW ARRIVALS ===== */
+    #new-arrivals {
+      position: relative;
+      z-index: 1;
+      padding: 88px 24px;
+      background: var(--bg2)
+    }
+
+    .na-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      padding: 0 0 0 2px
+    }
+
+    .na-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      font-weight: 700
+    }
+
+    .na-see-all {
+      font-size: .82rem;
+      color: var(--accent);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .na-see-all:hover {
+      gap: 10px
+    }
+
+    .na-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    .na-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .na-card:hover {
+      border-color: var(--borderA);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, .4)
+    }
+
+    .na-img {
+      aspect-ratio: 4/3;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .na-img img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s ease
+    }
+
+    .na-card:hover .na-img img {
+      transform: scale(1.06)
+    }
+
+    .na-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 4px 10px;
+      background: var(--accent);
+      color: #000;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border-radius: 99px
+    }
+
+    .na-body {
+      padding: 16px 18px
+    }
+
+    .na-cat {
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 5px
+    }
+
+    .na-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .95rem;
+      font-weight: 600;
+      margin-bottom: 4px
+    }
+
+    .na-from {
+      font-size: .78rem;
+      color: var(--text2)
+    }
+
+    .na-from strong {
+      color: var(--text);
+      font-weight: 600
+    }
+
+    /* na product art */
+    .na-art-bc {
+      width: 110px;
+      height: 68px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #1b3a5c, #0d2e50);
+      border: 1px solid rgba(255, 255, 255, .15);
+      position: relative
+    }
+
+    .na-art-bc::after {
+      content: '';
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      right: 12px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      opacity: .6
+    }
+
+    .na-art-bc::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .2)
+    }
+
+    .na-art-bag {
+      width: 80px;
+      height: 100px;
+      border-radius: 4px 4px 6px 6px;
+      background: linear-gradient(160deg, #1a1a1a, #333);
+      border: 1px solid rgba(255, 255, 255, .15);
+      position: relative
+    }
+
+    .na-art-bag::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 25px;
+      width: 30px;
+      height: 12px;
+      border-top: 2px solid rgba(255, 255, 255, .3);
+      border-radius: 50% 50% 0 0
+    }
+
+    .na-art-bag::after {
+      content: 'ENCOMIA';
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .4rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      color: rgba(255, 255, 255, .4);
+      white-space: nowrap
+    }
+
+    .na-art-mug {
+      width: 70px;
+      height: 80px;
+      border-radius: 6px 6px 10px 10px;
+      background: linear-gradient(160deg, #2d1a40, #1a0d28);
+      border: 1px solid rgba(255, 255, 255, .15);
+      position: relative
+    }
+
+    .na-art-mug::before {
+      content: '';
+      position: absolute;
+      right: -12px;
+      top: 20px;
+      width: 14px;
+      height: 24px;
+      border-radius: 0 50% 50% 0;
+      border: 2px solid rgba(255, 255, 255, .2);
+      border-left: none
+    }
+
+    .na-art-sticker {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) 0deg 90deg, #2e7d4f 90deg 180deg, #2d5a8e 180deg 270deg, #8e2d2d 270deg 360deg);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .na-art-sticker::after {
+      content: 'ENCOMIA';
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .42rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: #fff;
+      text-align: center
+    }
+
+    /* ===== TOOLS SECTION ===== */
+    #tools {
+      position: relative;
+      z-index: 1;
+      padding: 88px 24px;
+      background: var(--bg)
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 1100px;
+      margin: 0 auto
+    }
+
+    .tool-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 28px 24px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      cursor: pointer;
+      transition: var(--tr);
+      position: relative;
+      overflow: hidden
+    }
+
+    .tool-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: var(--tr)
+    }
+
+    .tool-card:hover {
+      border-color: var(--borderA);
+      transform: translateY(-3px);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, .35)
+    }
+
+    .tool-card:hover::after {
+      opacity: 1
+    }
+
+    .tool-icon {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      background: var(--accent-dim);
+      border: 1px solid var(--borderA);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      transition: var(--tr)
+    }
+
+    .tool-card:hover .tool-icon {
+      background: var(--accent);
+      border-color: var(--accent)
+    }
+
+    .tool-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 5px
+    }
+
+    .tool-desc {
+      font-size: .8rem;
+      color: var(--text2);
+      line-height: 1.55
+    }
+
+    /* ===== PROMO SPLIT ===== */
+    #promo-split {
+      position: relative;
+      z-index: 1;
+      padding: 0;
+      background: var(--bg2)
+    }
+
+    .ps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 420px
+    }
+
+    .ps-half {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 48px
+    }
+
+    .ps-half-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      transition: transform .5s ease
+    }
+
+    .ps-half:hover .ps-half-bg {
+      transform: scale(1.04)
+    }
+
+    .ps-half-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0, 0, 0, .75) 0%, rgba(0, 0, 0, .2) 100%)
+    }
+
+    .ps-half:nth-child(2) .ps-half-overlay {
+      background: linear-gradient(to left, rgba(0, 0, 0, .75) 0%, rgba(0, 0, 0, .2) 100%)
+    }
+
+    .ps-content {
+      position: relative;
+      z-index: 1;
+      max-width: 380px
+    }
+
+    .ps-tag {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px
+    }
+
+    .ps-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.2
+    }
+
+    .ps-desc {
+      font-size: .85rem;
+      color: rgba(255, 255, 255, .7);
+      line-height: 1.55;
+      margin-bottom: 20px
+    }
+
+    .ps-code {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px
+    }
+
+    .ps-code span {
+      color: var(--accent)
+    }
+
+    .ps-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 24px;
+      background: #fff;
+      color: #000;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: var(--tr)
+    }
+
+    .ps-btn:hover {
+      background: var(--accent);
+      transform: translateY(-1px)
+    }
+
+    /* background art for split panels */
+    .ps-bg1 {
+      background: linear-gradient(135deg, #0d1a2e 0%, #1a3a5c 50%, #0d2e50 100%);
+      background-size: cover;
+      background-position: center
+    }
+
+    .ps-bg2 {
+      background: linear-gradient(135deg, #1a0d28 0%, #3a1a5c 50%, #2e0d48 100%);
+      background-size: cover;
+      background-position: center
+    }
+
+    .ps-half-bg img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    /* art elements */
+    .ps-art1 {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      opacity: .6
+    }
+
+    .ps-art1 .r {
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, .4)
+    }
+
+    .ps-art1 .r1 {
+      width: 90px
+    }
+
+    .ps-art1 .r2 {
+      width: 65px
+    }
+
+    .ps-art1 .r3 {
+      width: 75px
+    }
+
+    .ps-art2 {
+      position: absolute;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 8px;
+      opacity: .5
+    }
+
+    .ps-art2 .sq {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      background: rgba(201, 162, 39, .25);
+      border: 1px solid rgba(201, 162, 39, .3)
+    }
+
+    /* ===== UGC GALLERY ===== */
+    #ugc {
+      position: relative;
+      z-index: 1;
+      padding: 88px 0;
+      background: var(--bg2);
+      overflow: hidden
+    }
+
+    .ugc-header {
+      text-align: center;
+      padding: 0 24px;
+      margin-bottom: 36px
+    }
+
+    .ugc-strip {
+      display: flex;
+      gap: 14px;
+      padding: 8px 24px 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      cursor: grab
+    }
+
+    .ugc-strip::-webkit-scrollbar {
+      display: none
+    }
+
+    .ugc-strip:active {
+      cursor: grabbing
+    }
+
+    .ugc-photo {
+      flex: 0 0 220px;
+      height: 220px;
+      border-radius: 12px;
+      overflow: hidden;
+      scroll-snap-align: start;
+      position: relative;
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .ugc-photo:hover {
+      transform: scale(1.03);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .5)
+    }
+
+    .ugc-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease
+    }
+
+    .ugc-photo:hover img {
+      transform: scale(1.08)
+    }
+
+    .ugc-handle {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px;
+      background: linear-gradient(to top, rgba(0, 0, 0, .7), transparent);
+      font-size: .72rem;
+      color: rgba(255, 255, 255, .8);
+      font-weight: 500
+    }
+
+    /* ugc photo backgrounds — CSS art product photos */
+    .ug1 {
+      background: linear-gradient(135deg, #1b3a5c 0%, #2d6a9e 50%, #1a3a7a 100%)
+    }
+
+    .ug2 {
+      background: linear-gradient(135deg, #2e0e40 0%, #7b2d9e 50%, #4a1a80 100%)
+    }
+
+    .ug3 {
+      background: linear-gradient(135deg, #1a3d2b 0%, #2e7d4f 50%, #1a5a3a 100%)
+    }
+
+    .ug4 {
+      background: linear-gradient(135deg, #4a2800 0%, #a04500 50%, #7a3000 100%)
+    }
+
+    .ug5 {
+      background: linear-gradient(135deg, #1a1a4f 0%, #3535a0 50%, #2020808 100%)
+    }
+
+    .ug6 {
+      background: linear-gradient(135deg, #2e2200 0%, #7a5500 50%, #5a3a00 100%)
+    }
+
+    .ug7 {
+      background: linear-gradient(135deg, #1e1e1e 0%, #3a3a3a 50%, #282828 100%)
+    }
+
+    .ugc-photo-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: .5
+    }
+
+    /* ===== SPECS ===== */
+    #specs {
+      position: relative;
+      z-index: 1;
+      padding: 88px 24px;
+      background: var(--bg)
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      max-width: 1000px;
+      margin: 56px auto 0
+    }
+
+    .spec-item {
+      background: var(--bg2);
+      padding: 42px 28px;
+      text-align: center
+    }
+
+    .spec-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
+      transition: text-shadow .3s
+    }
+
+    .spec-num.cnt {
+      text-shadow: 0 0 22px var(--accent-glow)
+    }
+
+    .spec-lbl {
+      font-size: .85rem;
+      color: var(--text2);
+      line-height: 1.4
+    }
+
+    /* ===== FEATURES ===== */
+    #features {
+      position: relative;
+      z-index: 1;
+      padding: 88px 24px;
+      background: var(--bg2)
+    }
+
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      max-width: 1100px;
+      margin: 0 auto
+    }
+
+    .feat-card {
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 36px 28px;
+      backdrop-filter: blur(16px);
+      transition: var(--tr);
+      position: relative;
+      overflow: hidden
+    }
+
+    .feat-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: var(--tr)
+    }
+
+    .feat-card:hover {
+      border-color: var(--borderA);
+      transform: translateY(-4px);
+      box-shadow: 0 18px 44px rgba(0, 0, 0, .35)
+    }
+
+    .feat-card:hover::after {
+      opacity: 1
+    }
+
+    .feat-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--accent-dim);
+      border: 1px solid var(--borderA);
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      margin-bottom: 22px;
+      transition: var(--tr)
+    }
+
+    .feat-card:hover .feat-icon {
+      background: var(--accent);
+      border-color: var(--accent)
+    }
+
+    .feat-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px
+    }
+
+    .feat-desc {
+      font-size: .88rem;
+      color: var(--text2);
+      line-height: 1.65
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    #testi {
+      position: relative;
+      z-index: 1;
+      padding: 88px 0;
+      background: var(--bg)
+    }
+
+    .testi-scroll {
+      display: flex;
+      gap: 18px;
+      padding: 8px 24px 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      cursor: grab
+    }
+
+    .testi-scroll::-webkit-scrollbar {
+      display: none
+    }
+
+    .testi-scroll:active {
+      cursor: grabbing
+    }
+
+    .testi-card {
+      flex: 0 0 320px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 28px;
+      scroll-snap-align: start;
+      transition: var(--tr)
+    }
+
+    .testi-card:hover {
+      border-color: var(--borderA)
+    }
+
+    .stars {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 14px;
+      color: var(--accent);
+      font-size: .95rem
+    }
+
+    .testi-text {
+      font-size: .88rem;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 18px;
+      font-style: italic
+    }
+
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 11px
+    }
+
+    .ta-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-dim), var(--bg3));
+      border: 1px solid var(--borderA);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--accent)
+    }
+
+    .ta-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .85rem;
+      font-weight: 600
+    }
+
+    .ta-role {
+      font-size: .72rem;
+      color: var(--text3)
+    }
+
+    /* ===== EMAIL SIGNUP ===== */
+    #signup {
+      position: relative;
+      z-index: 1;
+      padding: 0;
+      background: var(--bg2)
+    }
+
+    .signup-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 400px
+    }
+
+    .signup-visual {
+      background: linear-gradient(135deg, #1a2e1a, #0d1e0d);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .signup-art {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .signup-shirt {
+      width: 160px;
+      height: 140px;
+      background: linear-gradient(160deg, #1a2332, #2e3d52);
+      border-radius: 8px 8px 4px 4px;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, .1)
+    }
+
+    .signup-shirt::before {
+      content: 'ENCOMIA';
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: var(--accent);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%)
+    }
+
+    .signup-shirt::after {
+      content: '★';
+      font-size: 2rem;
+      color: rgba(201, 162, 39, .3);
+      position: absolute;
+      top: 10px;
+      right: 20px
+    }
+
+    .signup-tote {
+      width: 100px;
+      height: 110px;
+      background: linear-gradient(160deg, #2e2e2e, #1a1a1a);
+      border-radius: 4px 4px 8px 8px;
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      opacity: .7
+    }
+
+    .signup-tote::before {
+      content: '';
+      position: absolute;
+      top: -14px;
+      left: 22px;
+      width: 56px;
+      height: 14px;
+      border-top: 2.5px solid rgba(255, 255, 255, .25);
+      border-radius: 50% 50% 0 0
+    }
+
+    .signup-form-side {
+      padding: 60px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center
+    }
+
+    .su-discount {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: var(--accent-dim);
+      border: 1px solid var(--borderA);
+      border-radius: 99px;
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      align-self: flex-start
+    }
+
+    .su-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.2
+    }
+
+    .su-sub {
+      font-size: .9rem;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 360px
+    }
+
+    .su-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .su-input {
+      flex: 1 1 240px;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      color: var(--text);
+      font-family: 'Archivo', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: var(--tr)
+    }
+
+    .su-input::placeholder {
+      color: var(--text3)
+    }
+
+    .su-input:focus {
+      border-color: var(--accent);
+      background: rgba(201, 162, 39, .06)
+    }
+
+    .su-btn {
+      padding: 14px 28px;
+      background: var(--accent);
+      color: #000;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border-radius: 99px;
+      border: none;
+      cursor: pointer;
+      transition: var(--tr);
+      box-shadow: 0 4px 16px var(--accent-glow)
+    }
+
+    .su-btn:hover {
+      background: var(--accent-h);
+      transform: translateY(-1px)
+    }
+
+    .su-note {
+      font-size: .7rem;
+      color: var(--text3);
+      margin-top: 12px
+    }
+
+    .su-legal {
+      font-size: .72rem;
+      color: var(--text3);
+      line-height: 1.55;
+      margin-top: 12px;
+      max-width: 360px
+    }
+
+    /* ===== CTA ===== */
+    #cta {
+      position: relative;
+      z-index: 1;
+      padding: 100px 24px;
+      background: var(--bg);
+      text-align: center;
+      overflow: hidden
+    }
+
+    .cta-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(201, 162, 39, .1) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%)
+    }
+
+    .cta-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 40px
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      position: relative;
+      z-index: 1;
+      background: #080c14;
+      padding: 72px 24px 36px;
+      border-top: 1px solid var(--border)
+    }
+
+    .foot-inner {
+      max-width: 1200px;
+      margin: 0 auto
+    }
+
+    .foot-top {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      gap: 48px;
+      margin-bottom: 52px
+    }
+
+    .foot-brand {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      margin-bottom: 14px
+    }
+
+    .foot-brand em {
+      color: var(--accent);
+      font-style: normal
+    }
+
+    .foot-tagline {
+      font-size: .85rem;
+      color: var(--text2);
+      line-height: 1.6;
+      max-width: 260px;
+      margin-bottom: 22px
+    }
+
+    .foot-social {
+      display: flex;
+      gap: 9px
+    }
+
+    .soc-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .soc-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim)
+    }
+
+    .foot-col-h {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin-bottom: 18px
+    }
+
+    .foot-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px
+    }
+
+    .foot-links a {
+      font-size: .82rem;
+      color: var(--text2);
+      transition: var(--tr)
+    }
+
+    .foot-links a:hover {
+      color: var(--accent)
+    }
+
+    .foot-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px
+    }
+
+    .foot-copy {
+      font-size: .78rem;
+      color: var(--text3)
+    }
+
+    .foot-legal {
+      display: flex;
+      gap: 20px
+    }
+
+    .foot-legal a {
+      font-size: .78rem;
+      color: var(--text3);
+      transition: var(--tr)
+    }
+
+    .foot-legal a:hover {
+      color: var(--text2)
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+
+      50% {
+        opacity: .4;
+        transform: scale(.75)
+      }
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(9px)
+      }
+    }
+
+    @keyframes sdot {
+      0% {
+        top: 5px;
+        opacity: 1
+      }
+
+      100% {
+        top: 19px;
+        opacity: 0
+      }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:1200px) {
+      .cats-grid {
+        grid-template-columns: repeat(4, 1fr)
+      }
+
+      .foot-top {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px
+      }
+    }
+
+    @media(max-width:1024px) {
+      .collections-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .na-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .feat-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .specs-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .tools-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .ps-grid {
+        grid-template-columns: 1fr
+      }
+
+      .signup-split {
+        grid-template-columns: 1fr
+      }
+
+      .signup-visual {
+        min-height: 260px
+      }
+    }
+
+    @media(max-width:768px) {
+      .nav-links {
+        display: none
+      }
+
+      #sa {
+        height: 280vh
+      }
+
+      .anno {
+        min-width: 150px;
+        max-width: 168px;
+        padding: 10px 12px
+      }
+
+      .anno-desc,
+      .anno-stat,
+      .anno-sl {
+        display: none
+      }
+
+      .anno-title {
+        font-size: .78rem
+      }
+
+      .a1,
+      .a2 {
+        top: auto;
+        bottom: 18px
+      }
+
+      .a3,
+      .a4 {
+        display: none
+      }
+
+      .a1 {
+        left: 8px
+      }
+
+      .a2 {
+        right: 8px
+      }
+
+      .cats-grid {
+        grid-template-columns: repeat(4, 1fr)
+      }
+
+      .collections-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .na-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .feat-grid {
+        grid-template-columns: 1fr
+      }
+
+      .tools-grid {
+        grid-template-columns: 1fr
+      }
+
+      .vbar-inner {
+        grid-template-columns: 1fr
+      }
+
+      .vbar-item {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 16px 24px
+      }
+
+      .vbar-item:last-child {
+        border-bottom: none
+      }
+
+      .foot-top {
+        grid-template-columns: 1fr;
+        gap: 24px
+      }
+
+      .foot-bottom {
+        flex-direction: column;
+        text-align: center
+      }
+
+      .signup-form-side {
+        padding: 40px 24px
+      }
+    }
+
+    @media(max-width:480px) {
+      .cats-grid {
+        grid-template-columns: repeat(4, 1fr)
+      }
+
+      .collections-grid {
+        grid-template-columns: 1fr
+      }
+
+      .na-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* ===== PRODUCT MODAL ===== */
+    #pdp-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(5, 10, 18, .82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .35s ease
+    }
+
+    #pdp-overlay.open {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    #pdp-modal {
+      background: var(--bg2);
+      border: 1px solid var(--borderA);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 960px;
+      max-height: 92vh;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      transform: translateY(40px) scale(.97);
+      transition: transform .4s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    #pdp-overlay.open #pdp-modal {
+      transform: none
+    }
+
+    .pdp-close {
+      position: sticky;
+      top: 16px;
+      float: right;
+      margin: 16px 16px 0 0;
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: var(--text2);
+      transition: var(--tr);
+      z-index: 2;
+      flex-shrink: 0
+    }
+
+    .pdp-close:hover {
+      background: rgba(255, 255, 255, .15);
+      color: var(--text)
+    }
+
+    .pdp-left {
+      position: relative;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-right: 1px solid var(--border)
+    }
+
+    .pdp-main-img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--bg3)
+    }
+
+    .pdp-main-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s ease
+    }
+
+    .pdp-main-img img:hover {
+      transform: scale(1.04)
+    }
+
+    .pdp-thumbs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .pdp-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: var(--tr);
+      flex-shrink: 0
+    }
+
+    .pdp-thumb.active,
+    .pdp-thumb:hover {
+      border-color: var(--accent)
+    }
+
+    .pdp-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .pdp-right {
+      padding: 32px 32px 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto
+    }
+
+    .pdp-close-right {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--text2);
+      transition: var(--tr);
+      z-index: 5
+    }
+
+    .pdp-close-right:hover {
+      background: rgba(255, 255, 255, .16);
+      color: var(--text)
+    }
+
+    .pdp-crumb {
+      font-size: .72rem;
+      color: var(--text3);
+      letter-spacing: .04em;
+      margin-bottom: 10px
+    }
+
+    .pdp-crumb span {
+      color: var(--accent)
+    }
+
+    .pdp-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 10px
+    }
+
+    .pdp-stars {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px
+    }
+
+    .pdp-star-row {
+      color: #f5c518;
+      font-size: 1rem;
+      letter-spacing: .04em
+    }
+
+    .pdp-rating-num {
+      font-weight: 700;
+      font-size: .88rem;
+      color: var(--text)
+    }
+
+    .pdp-reviews {
+      font-size: .82rem;
+      color: var(--text3);
+      text-decoration: underline;
+      cursor: pointer
+    }
+
+    .pdp-desc {
+      font-size: .88rem;
+      color: var(--text2);
+      line-height: 1.65;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .pdp-price-block {
+      margin-bottom: 20px
+    }
+
+    .pdp-price-main {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--accent)
+    }
+
+    .pdp-price-sub {
+      font-size: .8rem;
+      color: var(--text3);
+      margin-top: 2px
+    }
+
+    .pdp-delivery {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .pdp-del-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: .82rem
+    }
+
+    .pdp-del-icon {
+      font-size: 1rem;
+      margin-top: .05em
+    }
+
+    .pdp-del-date {
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .pdp-del-fee {
+      color: var(--accent);
+      font-weight: 600
+    }
+
+    .pdp-del-free {
+      color: #4caf50;
+      font-weight: 600
+    }
+
+    .pdp-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 22px
+    }
+
+    .pdp-opt-label {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 6px
+    }
+
+    .pdp-opt-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px
+    }
+
+    .pdp-opt-btn {
+      padding: 7px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: .82rem;
+      font-weight: 500;
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      transition: var(--tr)
+    }
+
+    .pdp-opt-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim)
+    }
+
+    .pdp-opt-btn.sel {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim)
+    }
+
+    .pdp-opt-btn.incompat {
+      opacity: .4;
+      cursor: not-allowed;
+      text-decoration: line-through
+    }
+
+    .pdp-select {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Archivo', sans-serif;
+      font-size: .88rem;
+      cursor: pointer;
+      outline: none;
+      transition: var(--tr)
+    }
+
+    .pdp-select:focus,
+    .pdp-select:hover {
+      border-color: var(--accent)
+    }
+
+    .pdp-ctas {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: auto
+    }
+
+    .pdp-btn-main {
+      padding: 14px 24px;
+      background: var(--accent);
+      color: #000;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .88rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border-radius: 99px;
+      border: none;
+      cursor: pointer;
+      transition: var(--tr);
+      box-shadow: 0 4px 18px var(--accent-glow);
+      text-align: center
+    }
+
+    .pdp-btn-main:hover {
+      background: var(--accent-h);
+      transform: translateY(-1px)
+    }
+
+    .pdp-btn-sec {
+      padding: 13px 24px;
+      background: transparent;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .88rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      border-radius: 99px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: var(--tr);
+      text-align: center
+    }
+
+    .pdp-btn-sec:hover {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .pdp-paypal {
+      margin-top: 6px;
+      font-size: .75rem;
+      color: var(--text3);
+      text-align: center
+    }
+
+    .pdp-paypal strong {
+      color: #009cde
+    }
+
+    @media(max-width:700px) {
+      #pdp-modal {
+        grid-template-columns: 1fr;
+        max-height: 95vh
+      }
+
+      .pdp-left {
+        padding: 20px 20px 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border)
+      }
+
+      .pdp-main-img {
+        aspect-ratio: 4/3
+      }
+
+      .pdp-right {
+        padding: 20px
+      }
+
+      .pdp-name {
+        font-size: 1.25rem
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="sp"></div>
+  <canvas id="stars"></canvas>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="ld-logo">ENCO<em>MIA</em></div>
+    <div class="ld-track">
+      <div class="ld-bar" id="ld-bar"></div>
+    </div>
+    <div class="ld-txt" id="ld-txt">Loading…</div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="nav">
+    <div class="nav-brand">ENCO<em>MIA</em></div>
+    <ul class="nav-links">
+      <li><a href="#cats">Business Cards</a></li>
+      <li><a href="#cats">Signs & Banners</a></li>
+      <li><a href="#cats">Marketing</a></li>
+      <li><a href="#cats">Packaging</a></li>
+      <li><a href="#cats">Promo Items</a></li>
+    </ul>
+    <button class="nav-cta">Start Designing</button>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <!-- Product mosaic background (VistaPrint style) -->
+    <div class="hero-mosaic" aria-hidden="true">
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1574634534894-89d7576c8259?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1612831455359-970e23a1e4e9?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+      <div class="mosaic-tile"
+        style="background-image:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=280&fit=crop&auto=format&q=75');background-size:cover;background-position:center">
+      </div>
+    </div>
+    <div class="hero-mosaic-overlay"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Online Printing — Delivered to Your Door</div>
+      <h1 class="hero-h1">If You Need It,<br><span class="g">We Print It</span></h1>
+      <p class="hero-sub">Design online with our free tools or upload your own artwork. We handle the printing and
+        deliver straight to your door — as fast as next business day.</p>
+      <p class="hero-sub2">20% off your first order &nbsp;·&nbsp; Code: <strong
+          style="color:var(--accent)">WELCOME20</strong></p>
+      <div class="hero-actions">
+        <button class="btn-p">Explore All Products</button>
+        <button class="btn-s">Upload Your Design</button>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-mouse"></div><span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- VALUE PROPS BAR -->
+  <div id="vbar">
+    <div class="vbar-inner">
+      <div class="vbar-item">
+        <div class="vbar-icon">🚚</div>
+        <div>
+          <div class="vbar-title">Free delivery on orders $100+</div>
+          <div class="vbar-sub">Express options available at checkout</div>
+        </div>
+      </div>
+      <div class="vbar-item">
+        <div class="vbar-icon">💬</div>
+        <div>
+          <div class="vbar-title">Expert help when you need it</div>
+          <div class="vbar-sub">Phone, email & live chat support</div>
+        </div>
+      </div>
+      <div class="vbar-item">
+        <div class="vbar-icon">⭐</div>
+        <div>
+          <div class="vbar-title">Over 50,000 five-star reviews</div>
+          <div class="vbar-sub">Trusted by businesses nationwide</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCROLL ANIMATION -->
+  <section id="sa">
+    <div class="sa-sticky">
+      <canvas id="vc"></canvas>
+      <div class="anno-wrap">
+        <div class="anno a1" data-show="0.10" data-hide="0.38">
+          <div class="anno-n">01 — Design</div>
+          <div class="anno-title">Free Online Designer</div>
+          <div class="anno-desc">Thousands of templates or start from scratch. No software download needed.</div>
+          <div class="anno-stat">5,000+</div>
+          <div class="anno-sl">ready-made templates</div>
+        </div>
+        <div class="anno a2" data-show="0.22" data-hide="0.50">
+          <div class="anno-n">02 — Quality</div>
+          <div class="anno-title">Premium Print Stock</div>
+          <div class="anno-desc">320gsm silk laminate, vibrant full-bleed colour, built to last.</div>
+          <div class="anno-stat">320gsm</div>
+          <div class="anno-sl">professional card stock</div>
+        </div>
+        <div class="anno a3" data-show="0.44" data-hide="0.72">
+          <div class="anno-n">03 — Speed</div>
+          <div class="anno-title">Next-Day Dispatch</div>
+          <div class="anno-desc">Order before 2PM and your prints ship the same business day.</div>
+          <div class="anno-stat">24hr</div>
+          <div class="anno-sl">express turnaround</div>
+        </div>
+        <div class="anno a4" data-show="0.58" data-hide="0.86">
+          <div class="anno-n">04 — Promise</div>
+          <div class="anno-title">100% Satisfaction</div>
+          <div class="anno-desc">Not happy with your order? We reprint or refund — no questions asked.</div>
+          <div class="anno-stat">100%</div>
+          <div class="anno-sl">satisfaction guarantee</div>
+        </div>
+      </div>
+      <div class="sa-progress">
+        <div class="sa-p-track">
+          <div class="sa-p-fill" id="sa-fill"></div>
+        </div>
+        <div class="sa-p-txt" id="sa-txt">Scroll to explore</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORE CATEGORIES -->
+  <section id="cats">
+    <div class="s-label">All Products</div>
+    <h2 class="s-title fin">Explore All Categories</h2>
+    <p class="s-sub fin d1">Design online, choose your quantity, and we'll print and deliver. Every product, every
+      format, every business size.</p>
+    <div class="cats-grid">
+      <div class="cat-card fin d1">
+        <div class="cat-circle"><img
+            src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&auto=format&q=80"
+            alt="Business Cards" loading="lazy"></div>
+        <div class="cat-name">Business Cards</div>
+      </div>
+      <div class="cat-card fin d2">
+        <div class="cat-circle"><img
+            src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?w=200&h=200&fit=crop&auto=format&q=80"
+            alt="Postcards" loading="lazy"></div>
+        <div class="cat-name">Postcards & Print Advertising</div>
+      </div>
+      <div class="cat-card fin d3">
+        <div class="cat-circle"><img
+            src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&auto=format&q=80"
+            alt="Signs & Banners" loading="lazy"></div>
+        <div class="cat-name">Signs, Banners & Posters</div>
+      </div>
+      <div class="cat-card fin d4">
+        <div class="cat-circle"><img
+            src="https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?w=200&h=200&fit=crop&auto=format&q=80"
+            alt="Stickers" loading="lazy"></div>
+        <div class="cat-name">Stickers & Labels</div>
+      </div>
+      <div class="cat-card fin d1">
+        <div class="cat-circle"><img
+            src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=200&h=200&fit=crop&auto=format&q=80"
+            alt="Clothing & Bags" loading="lazy"></div>
+        <div class="cat-name">Clothing & Bags</div>
+      </div>
+      <div class="cat-card fin d2">
+        <div class="cat-circle"><img
+            src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=200&h=200&fit=crop&auto=format&q=80"
+            alt="Packaging" loading="lazy"></div>
+        <div class="cat-name">Packaging</div>
+      </div>
+      <div class="cat-card fin d3">
+        <div class="cat-circle"><img
+            src="https://images.unsplash.com/photo-1574958269340-fa927503f3dd?w=200&h=200&fit=crop&auto=format&q=80"
+            alt="Promotional Products" loading="lazy"></div>
+        <div class="cat-name">Promotional Products</div>
+      </div>
+      <div class="cat-card fin d4">
+        <div class="cat-circle"><img
+            src="https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=200&h=200&fit=crop&auto=format&q=80"
+            alt="Stationery" loading="lazy"></div>
+        <div class="cat-name">Invitations & Stationery</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP BY COLLECTION -->
+  <section id="collections">
+    <div class="s-label">Curated For You</div>
+    <h2 class="s-title fin">Shop by Collection</h2>
+    <p class="s-sub fin d1">Handpicked product sets for every business need — from launch day to grand openings.</p>
+    <div class="collections-grid">
+      <div class="coll-card fin d1" data-pid="starter-kit" style="cursor:pointer">
+        <div class="coll-bg"><img
+            src="https://images.unsplash.com/photo-1610187224249-1c5aa1841c2c?w=800&h=800&fit=crop&auto=format&q=85"
+            alt="Business starter kit" loading="lazy"></div>
+        <div class="coll-overlay"></div>
+        <div class="coll-content">
+          <div class="coll-tag">Launch Your Business</div>
+          <div class="coll-title">New Business Starter Kit</div>
+          <div class="coll-count">Cards, flyers, stickers & more · 20% off first order</div>
+        </div>
+      </div>
+      <div class="coll-card fin d2" data-pid="event-bundle" style="cursor:pointer">
+        <div class="coll-bg"><img
+            src="https://images.unsplash.com/photo-1574958269340-fa927503f3dd?w=600&h=900&fit=crop&auto=format&q=80"
+            alt="Events & trade shows" loading="lazy"></div>
+        <div class="coll-overlay"></div>
+        <div class="coll-content">
+          <div class="coll-tag">Events & Trade Shows</div>
+          <div class="coll-title">Event-Ready Print Bundle</div>
+          <div class="coll-count">Banners, tablecloths, name badges & more</div>
+        </div>
+      </div>
+      <div class="coll-card fin d3" data-pid="packaging-bundle" style="cursor:pointer">
+        <div class="coll-bg"><img
+            src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&h=900&fit=crop&auto=format&q=80"
+            alt="Custom packaging" loading="lazy"></div>
+        <div class="coll-overlay"></div>
+        <div class="coll-content">
+          <div class="coll-tag">E-Commerce & Retail</div>
+          <div class="coll-title">Brand Your Packaging</div>
+          <div class="coll-count">Boxes, bags, tissue, stickers & inserts</div>
+        </div>
+      </div>
+      <div class="coll-card fin d4" data-pid="marketing-bundle" style="cursor:pointer">
+        <div class="coll-bg"><img
+            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=900&fit=crop&auto=format&q=80"
+            alt="Marketing materials" loading="lazy"></div>
+        <div class="coll-overlay"></div>
+        <div class="coll-content">
+          <div class="coll-tag">Marketing Campaigns</div>
+          <div class="coll-title">Grow Your Reach</div>
+          <div class="coll-count">Flyers, brochures, door hangers & postcards</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW ARRIVALS -->
+  <section id="new-arrivals">
+    <div class="na-header fin">
+      <div class="na-title">Shop new arrivals</div>
+      <div class="na-see-all">See all →</div>
+    </div>
+    <div class="na-grid">
+      <div class="na-card fin d1" data-pid="business-cards" style="cursor:pointer">
+        <div class="na-img">
+          <img src="https://images.unsplash.com/photo-1610187224249-1c5aa1841c2c?w=600&h=420&fit=crop&auto=format&q=80"
+            alt="Soft-touch business cards" loading="lazy">
+          <div class="na-badge">New</div>
+        </div>
+        <div class="na-body">
+          <div class="na-cat">Business Cards</div>
+          <div class="na-name">Soft-touch Matte Foil Cards</div>
+          <div class="na-from">From <strong>₦29,500</strong> for 100</div>
+        </div>
+      </div>
+      <div class="na-card fin d2" data-pid="tote-bags" style="cursor:pointer">
+        <div class="na-img">
+          <img src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&h=420&fit=crop&auto=format&q=80"
+            alt="Custom tote bags" loading="lazy">
+          <div class="na-badge">New</div>
+        </div>
+        <div class="na-body">
+          <div class="na-cat">Clothing & Bags</div>
+          <div class="na-name">Custom Printed Tote Bags</div>
+          <div class="na-from">From <strong>₦19,500</strong> per bag</div>
+        </div>
+      </div>
+      <div class="na-card fin d3" data-pid="ceramic-mugs" style="cursor:pointer">
+        <div class="na-img">
+          <img src="https://images.unsplash.com/photo-1516390118834-21602d501886?w=800&h=800&fit=crop&auto=format&q=85"
+            alt="Branded mugs" loading="lazy">
+          <div class="na-badge">New</div>
+        </div>
+        <div class="na-body">
+          <div class="na-cat">Promotional Products</div>
+          <div class="na-name">Branded Ceramic Mugs</div>
+          <div class="na-from">From <strong>₦14,000</strong> per mug</div>
+        </div>
+      </div>
+      <div class="na-card fin d4" data-pid="die-cut-stickers" style="cursor:pointer">
+        <div class="na-img">
+          <img src="https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?w=600&h=420&fit=crop&auto=format&q=80"
+            alt="Die-cut stickers" loading="lazy">
+          <div class="na-badge">New</div>
+        </div>
+        <div class="na-body">
+          <div class="na-cat">Stickers & Labels</div>
+          <div class="na-name">Die-Cut Custom Stickers</div>
+          <div class="na-from">From <strong>₦15,500</strong> for 50</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO SPLIT PANELS -->
+  <section id="promo-split">
+    <div class="ps-grid">
+      <div class="ps-half">
+        <div class="ps-half-bg ps-bg1">
+          <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&h=500&fit=crop&auto=format&q=80"
+            alt="Business printing" loading="lazy">
+        </div>
+        <div class="ps-half-overlay"></div>
+        <div class="ps-content">
+          <div class="ps-tag">Launch your new business</div>
+          <h3 class="ps-title">You dream it,<br>we help you start it</h3>
+          <p class="ps-desc">We've got every product you need to launch your business — plus tools that make it easy.
+            Design online, order in minutes, delivered to your door.</p>
+          <div class="ps-code">Get <span>20% off</span> your first order &nbsp;·&nbsp; Code: <span>NEW20</span></div>
+          <button class="ps-btn">Get started →</button>
+        </div>
+      </div>
+      <div class="ps-half" style="align-items:flex-end">
+        <div class="ps-half-bg ps-bg2">
+          <img src="https://images.unsplash.com/photo-1612817288484-6f916006741a?w=800&h=500&fit=crop&auto=format&q=80"
+            alt="Design tools" loading="lazy">
+        </div>
+        <div class="ps-half-overlay"></div>
+        <div class="ps-content" style="text-align:right;margin-left:auto">
+          <div class="ps-tag">Free AI Design Tools</div>
+          <h3 class="ps-title">Turn any idea into<br>your perfect design</h3>
+          <p class="ps-desc">Our free online design studio makes it easy. Pick a template, add your logo, customise
+            colours — then let us print and deliver it for you.</p>
+          <button class="ps-btn" style="margin-left:auto">Start designing →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS SECTION -->
+  <section id="tools">
+    <div class="s-label">Self-Service Made Easy</div>
+    <h2 class="s-title fin">Tools to Help Build<br>Your Business</h2>
+    <p class="s-sub fin d1">Everything you need to design, order, and grow — all in one place. No design experience
+      needed.</p>
+    <div class="tools-grid">
+      <div class="tool-card fin d1">
+        <div class="tool-icon">🎨</div>
+        <div>
+          <div class="tool-title">Free Online Design Studio</div>
+          <div class="tool-desc">Choose from thousands of professional templates and customise with your brand colours,
+            logo, and text — no software required.</div>
+        </div>
+      </div>
+      <div class="tool-card fin d2">
+        <div class="tool-icon">📤</div>
+        <div>
+          <div class="tool-title">Upload Your Artwork</div>
+          <div class="tool-desc">Already have a design? Upload your PDF, AI, PNG, or JPEG file and we'll prepare it for
+            print. Instant proofs included.</div>
+        </div>
+      </div>
+      <div class="tool-card fin d3">
+        <div class="tool-icon">🤖</div>
+        <div>
+          <div class="tool-title">AI Logo Maker</div>
+          <div class="tool-desc">Generate a professional logo in seconds using our AI-powered tool, then print it on
+            business cards, shirts, or anything you like.</div>
+        </div>
+      </div>
+      <div class="tool-card fin d1">
+        <div class="tool-icon">🏪</div>
+        <div>
+          <div class="tool-title">Build Your Website</div>
+          <div class="tool-desc">Get a simple, professional website alongside your printed materials. Consistent
+            branding online and offline, all in one account.</div>
+        </div>
+      </div>
+      <div class="tool-card fin d2">
+        <div class="tool-icon">🤝</div>
+        <div>
+          <div class="tool-title">Reseller Programme</div>
+          <div class="tool-desc">Are you a designer or agency? Earn more by offering ENCOMIA print to your clients
+            through our white-label reseller platform.</div>
+        </div>
+      </div>
+      <div class="tool-card fin d3">
+        <div class="tool-icon">🎯</div>
+        <div>
+          <div class="tool-title">Tailored Solutions</div>
+          <div class="tool-desc">Need a large order, custom sizes, or specialist finishes? Our business team will create
+            a bespoke quote just for you.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UGC GALLERY -->
+  <section id="ugc">
+    <div class="ugc-header">
+      <div class="s-label">Community</div>
+      <h2 class="s-title fin" style="margin-bottom:8px">Made with ENCOMIA</h2>
+      <p class="s-sub fin d1" style="margin-bottom:0">We love seeing what our customers create. Share your prints and
+        tag us to be featured here.</p>
+    </div>
+    <div class="ugc-strip" id="ugc-strip">
+      <div class="ugc-photo"><img
+          src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop&auto=format&q=80"
+          alt="Customer photo" loading="lazy">
+        <div class="ugc-handle">@northside.studio</div>
+      </div>
+      <div class="ugc-photo"><img
+          src="https://images.unsplash.com/photo-1612831455359-970e23a1e4e9?w=400&h=400&fit=crop&auto=format&q=80"
+          alt="Customer photo" loading="lazy">
+        <div class="ugc-handle">@bloom.boutique</div>
+      </div>
+      <div class="ugc-photo"><img
+          src="https://images.unsplash.com/photo-1593642532842-98d0fd5ebc1a?w=400&h=400&fit=crop&auto=format&q=80"
+          alt="Customer photo" loading="lazy">
+        <div class="ugc-handle">@greenleaf.cafe</div>
+      </div>
+      <div class="ugc-photo"><img
+          src="https://images.unsplash.com/photo-1530099486328-e021101a494a?w=400&h=400&fit=crop&auto=format&q=80"
+          alt="Customer photo" loading="lazy">
+        <div class="ugc-handle">@motiongym.co</div>
+      </div>
+      <div class="ugc-photo"><img
+          src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=400&fit=crop&auto=format&q=80"
+          alt="Customer photo" loading="lazy">
+        <div class="ugc-handle">@apex.realty</div>
+      </div>
+      <div class="ugc-photo"><img
+          src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=400&h=400&fit=crop&auto=format&q=80"
+          alt="Customer photo" loading="lazy">
+        <div class="ugc-handle">@sakura.gifts</div>
+      </div>
+      <div class="ugc-photo"><img
+          src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=400&h=400&fit=crop&auto=format&q=80"
+          alt="Customer photo" loading="lazy">
+        <div class="ugc-handle">@riverstone.law</div>
+      </div>
+      <div class="ugc-photo"><img
+          src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&h=400&fit=crop&auto=format&q=80"
+          alt="Customer photo" loading="lazy">
+        <div class="ugc-handle">@thegracefulhook</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECS -->
+  <section id="specs">
+    <div class="s-label fin">Trusted by Thousands</div>
+    <h2 class="s-title fin d1">Print at Scale,<br>Delivered with Care</h2>
+    <p class="s-sub fin d2">Numbers that reflect our commitment to quality, speed, and satisfaction — every single
+      order.</p>
+    <div class="specs-grid">
+      <div class="spec-item fin">
+        <div class="spec-num" data-target="50000">0</div>
+        <div class="spec-lbl">Happy customers<br>and counting</div>
+      </div>
+      <div class="spec-item fin d1">
+        <div class="spec-num" data-target="200" data-suffix="+">0</div>
+        <div class="spec-lbl">Product types<br>in our catalogue</div>
+      </div>
+      <div class="spec-item fin d2">
+        <div class="spec-num" data-target="24" data-suffix="hr">0</div>
+        <div class="spec-lbl">Express dispatch<br>on most orders</div>
+      </div>
+      <div class="spec-item fin d3">
+        <div class="spec-num" data-target="99" data-suffix="%">0</div>
+        <div class="spec-lbl">Satisfaction rate,<br>guaranteed</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="s-label">Why ENCOMIA</div>
+    <h2 class="s-title fin">Designed for Businesses<br>That Mean Business</h2>
+    <p class="s-sub fin d1">Self-service printing that doesn't compromise on quality. You design it, we print it, we
+      deliver it.</p>
+    <div class="feat-grid">
+      <div class="feat-card fin">
+        <div class="feat-icon">💎</div>
+        <div class="feat-title">Professional Print Quality</div>
+        <p class="feat-desc">Every product is printed on premium stock with industry-grade inks and optional finishes
+          including gloss, matte, soft-touch, foil, and spot UV. The quality your brand deserves, at a price that makes
+          sense.</p>
+      </div>
+      <div class="feat-card fin d1">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">Order Online, Delivered Fast</div>
+        <p class="feat-desc">The whole process is self-service and takes minutes. Upload your artwork or design using
+          our online tools, pick your quantity, checkout — and we handle everything from print to delivery. As fast as
+          24 hours.</p>
+      </div>
+      <div class="feat-card fin d2">
+        <div class="feat-icon">🛡️</div>
+        <div class="feat-title">100% Happiness Guarantee</div>
+        <p class="feat-desc">Every order is backed by our satisfaction promise. If your prints don't arrive perfectly,
+          we will reprint or refund with no questions asked, no forms to fill in, and no hassle. That's our commitment
+          to you.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testi">
+    <div class="s-label" style="padding:0 24px">Customer Reviews</div>
+    <h2 class="s-title fin" style="padding:0 24px;margin-bottom:8px">Businesses Love ENCOMIA</h2>
+    <p class="s-sub fin d1" style="padding:0 24px;margin-bottom:36px">Real feedback from real customers. Self-service
+      printing that delivers.</p>
+    <div class="testi-scroll" id="testi-scroll">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"I designed my business cards online in under 15 minutes using their templates. No
+          designer needed. They arrived two days later and looked completely professional — my clients always comment on
+          them."</p>
+        <div class="testi-author">
+          <div class="ta-avatar">SR</div>
+          <div>
+            <div class="ta-name">Sarah R.</div>
+            <div class="ta-role">Founder, Riviera Consulting</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"We needed 500 pull-up banners for a trade show in 72 hours. I ordered everything online,
+          uploaded our designs, and every single banner arrived on time, perfect colour match. Absolutely unreal
+          service."</p>
+        <div class="testi-author">
+          <div class="ta-avatar">MK</div>
+          <div>
+            <div class="ta-name">Marcus K.</div>
+            <div class="ta-role">Marketing Director, BuildCo</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"The self-service model is exactly what a small business needs. I don't have to call
+          anyone or wait for quotes. I just pick my product, design online, and it shows up at my door. Simple as that."
+        </p>
+        <div class="testi-author">
+          <div class="ta-avatar">LT</div>
+          <div>
+            <div class="ta-name">Lisa T.</div>
+            <div class="ta-role">Owner, Bloom Boutique</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"Our custom packaging from ENCOMIA is better than anything we were getting from our
+          previous supplier — and it costs less. The online designer made it easy to match our brand colours exactly."
+        </p>
+        <div class="testi-author">
+          <div class="ta-avatar">JP</div>
+          <div>
+            <div class="ta-name">James P.</div>
+            <div class="ta-role">Principal, Apex Realty</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"Ordered 10,000 double-sided flyers for our restaurant launch. I uploaded the artwork,
+          approved the digital proof, and they were delivered two days later. Couldn't be easier — and the print quality
+          was flawless."</p>
+        <div class="testi-author">
+          <div class="ta-avatar">AN</div>
+          <div>
+            <div class="ta-name">Anika N.</div>
+            <div class="ta-role">Co-owner, The Saffron Table</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMAIL SIGNUP -->
+  <section id="signup">
+    <div class="signup-split">
+      <div class="signup-visual" style="padding:0">
+        <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=500&fit=crop&auto=format&q=80"
+          alt="Branded packaging products" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+        <div
+          style="position:absolute;inset:0;background:linear-gradient(to right,rgba(13,20,34,.5),rgba(13,20,34,.15))">
+        </div>
+      </div>
+      <div class="signup-form-side">
+        <div class="su-discount">🎁 Exclusive members offer</div>
+        <h2 class="su-title">It's good to<br>be on the list.</h2>
+        <p class="su-sub">Get 15% off your next order when you sign up. Plus free design templates, print tips, and
+          exclusive deals every week — delivered to your inbox.</p>
+        <form class="su-form" onsubmit="return false">
+          <input type="email" class="su-input" placeholder="Your email address…" />
+          <button type="submit" class="su-btn">Get 15% Off</button>
+        </form>
+        <p class="su-note">No spam. Unsubscribe any time.</p>
+        <p class="su-legal">Yes, I'd like to receive special offer emails from ENCOMIA, as well as news about new
+          products and my designs in progress. You can unsubscribe at any time. Read our Privacy and Cookie policy.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="cta-orb"></div>
+    <div class="cta-inner">
+      <div class="s-label">Ready to get started?</div>
+      <h2 class="s-title fin" style="margin-bottom:16px">Design It. Order It.<br><span style="color:var(--accent)">We'll
+          Handle the Rest.</span></h2>
+      <p class="s-sub fin d1" style="margin-bottom:0">Browse over 200 print products, design online for free, and get
+        professional prints delivered straight to your door. It really is that simple.</p>
+      <div class="cta-actions fin d2">
+        <button class="btn-p">Browse All Products</button>
+        <button class="btn-s">Get a Custom Quote</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-inner">
+      <div class="foot-top">
+        <div>
+          <div class="foot-brand">ENCO<em>MIA</em></div>
+          <p class="foot-tagline">Online printing for businesses that mean business. Design it, order it — we print and
+            deliver it to your door.</p>
+          <div class="foot-social">
+            <div class="soc-btn">𝑓</div>
+            <div class="soc-btn">📸</div>
+            <div class="soc-btn">in</div>
+            <div class="soc-btn">𝕏</div>
+          </div>
+        </div>
+        <div>
+          <div class="foot-col-h">Products</div>
+          <ul class="foot-links">
+            <li><a href="#">Business Cards</a></li>
+            <li><a href="#">Flyers & Brochures</a></li>
+            <li><a href="#">Signs & Banners</a></li>
+            <li><a href="#">Custom Packaging</a></li>
+            <li><a href="#">Stickers & Labels</a></li>
+            <li><a href="#">Promotional Items</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="foot-col-h">Company</div>
+          <ul class="foot-links">
+            <li><a href="#">About ENCOMIA</a></li>
+            <li><a href="#">How It Works</a></li>
+            <li><a href="#">Sustainability</a></li>
+            <li><a href="#">Reseller Programme</a></li>
+            <li><a href="#">Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="foot-col-h">Help</div>
+          <ul class="foot-links">
+            <li><a href="#">Help Centre</a></li>
+            <li><a href="#">Track My Order</a></li>
+            <li><a href="#">Upload Guidelines</a></li>
+            <li><a href="#">Returns & Reprints</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <div class="foot-copy">© 2025 ENCOMIA. All rights reserved.</div>
+        <div class="foot-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Use</a>
+          <a href="#">Cookie Preferences</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ============= STARSCAPE =============
+    (() => {
+      const c = document.getElementById('stars'), x = c.getContext('2d');
+      let st = [], W, H;
+      function rs() { W = c.width = innerWidth; H = c.height = innerHeight }
+      function is() { st = []; for (let i = 0; i < 170; i++)st.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.1 + .2, dx: (Math.random() - .5) * .06, dy: (Math.random() - .5) * .06, ts: Math.random() * .015 + .004, tp: Math.random() * Math.PI * 2, bo: Math.random() * .45 + .1 }) }
+      function draw(ts) {
+        x.clearRect(0, 0, W, H); const t = ts / 1000;
+        st.forEach(s => {
+          s.x += s.dx; s.y += s.dy;
+          if (s.x < 0) s.x = W; if (s.x > W) s.x = 0; if (s.y < 0) s.y = H; if (s.y > H) s.y = 0;
+          const o = s.bo + Math.sin(t * s.ts * 2 * Math.PI + s.tp) * .22;
+          x.beginPath(); x.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          x.fillStyle = `rgba(255,255,255,${Math.max(0, o)})`; x.fill();
+        }); requestAnimationFrame(draw);
+      }
+      rs(); is(); requestAnimationFrame(draw);
+      window.addEventListener('resize', () => { rs(); is() });
+    })();
+
+    // ============= FRAME ANIMATION (smooth lerp) =============
+    const TOTAL = 96;
+    const frames = new Array(TOTAL);
+    let loaded = 0;
+    let displayF = 0;   // smooth float index (lerp)
+    let targetF = 0;    // exact target from scroll
+    let drawnF = -1;    // last rendered integer frame
+
+    const vc = document.getElementById('vc');
+    const vx = vc.getContext('2d');
+
+    function resizeVC() {
+      const dpr = devicePixelRatio || 1;
+      vc.width = innerWidth * dpr; vc.height = innerHeight * dpr;
+      vc.style.width = innerWidth + 'px'; vc.style.height = innerHeight + 'px';
+    }
+    function drawF(idx) {
+      const img = frames[idx];
+      if (!img || !img.complete) return;
+      const dpr = devicePixelRatio || 1;
+      const cw = vc.width, ch = vc.height;
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      const isMob = innerWidth < 768;
+      let sc;
+      if (isMob) { sc = Math.min(cw / iw, ch / ih) * 1.12 } else { sc = Math.max(cw / iw, ch / ih) }
+      const dw = iw * sc, dh = ih * sc;
+      vx.clearRect(0, 0, cw, ch);
+      vx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+    }
+
+    // Continuous RAF loop for smooth lerp
+    function animLoop() {
+      // lerp display frame toward target
+      displayF += (targetF - displayF) * 0.18;
+      const ri = Math.round(displayF);
+      const clamped = Math.max(0, Math.min(TOTAL - 1, ri));
+      if (clamped !== drawnF) { drawnF = clamped; drawF(clamped) }
+      requestAnimationFrame(animLoop);
+    }
+
+    function loadFrames() {
+      for (let i = 1; i <= TOTAL; i++) {
+        const img = new Image();
+        const p = String(i).padStart(4, '0');
+        img.src = `frames/frame_${p}.jpg`;
+        img.onload = () => {
+          loaded++;
+          const pct = (loaded / TOTAL) * 100;
+          document.getElementById('ld-bar').style.width = pct + '%';
+          if (loaded === TOTAL) {
+            document.getElementById('ld-txt').textContent = 'Ready';
+            setTimeout(() => document.getElementById('loader').classList.add('out'), 300);
+            drawF(0);
+          }
+        };
+        img.onerror = () => { loaded++ };
+        frames[i - 1] = img;
+      }
+    }
+
+    // ============= SCROLL HANDLER =============
+    const sa = document.getElementById('sa');
+    let snapLocked = false, snapTO = null;
+    const SNAP_HOLD = 500;
+    const snapPts = [0.14, 0.26, 0.48, 0.62];
+    const snapDone = new Set();
+
+    function scrollProg() {
+      const rect = sa.getBoundingClientRect();
+      const sh = sa.offsetHeight - innerHeight;
+      if (sh <= 0) return 0;
+      return Math.max(0, Math.min(1, -rect.top / sh));
+    }
+
+    window.addEventListener('scroll', () => {
+      // Global scroll progress bar
+      const dh = document.documentElement.scrollHeight - innerHeight;
+      document.getElementById('sp').style.width = (dh > 0 ? scrollY / dh * 100 : 0) + '%';
+
+      // Navbar pill
+      document.getElementById('nav').classList.toggle('pill', scrollY > 60);
+
+      const prog = scrollProg();
+      targetF = prog * (TOTAL - 1);
+
+      // Section progress indicator
+      document.getElementById('sa-fill').style.width = (prog * 100) + '%';
+      if (prog < .05) document.getElementById('sa-txt').textContent = 'Scroll to explore';
+      else if (prog > .95) document.getElementById('sa-txt').textContent = 'Keep scrolling';
+      else document.getElementById('sa-txt').textContent = `${Math.round(prog * 100)}% explored`;
+
+      // Annotation cards
+      document.querySelectorAll('.anno').forEach(a => {
+        const show = parseFloat(a.dataset.show), hide = parseFloat(a.dataset.hide);
+        a.classList.toggle('vis', prog >= show && prog < hide);
+      });
+
+      // Soft snap-stop
+      if (!snapLocked) {
+        for (const sp of snapPts) {
+          if (!snapDone.has(sp) && Math.abs(prog - sp) < 0.035) {
+            snapDone.add(sp);
+            snapLocked = true;
+            const st = sa.offsetTop, sh = sa.offsetHeight - innerHeight;
+            window.scrollTo({ top: st + sp * sh, behavior: 'smooth' });
+            document.body.style.overflow = 'hidden';
+            clearTimeout(snapTO);
+            snapTO = setTimeout(() => { document.body.style.overflow = ''; snapLocked = false; }, SNAP_HOLD);
+            break;
+          }
+        }
+      }
+      if (prog < .01 || prog > .97) snapDone.clear();
+    }, { passive: true });
+
+    // ============= FADE-IN OBSERVER =============
+    const fio = new IntersectionObserver(es => { es.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis') }) }, { threshold: .1 });
+    document.querySelectorAll('.fin').forEach(el => fio.observe(el));
+
+    // ============= COUNT-UP =============
+    const cio = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        const tgt = parseInt(el.dataset.target);
+        const suf = el.dataset.suffix || '';
+        cio.unobserve(el);
+        let st = null; const dur = 1800;
+        function eoe(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t) }
+        el.classList.add('cnt');
+        requestAnimationFrame(function step(ts) {
+          if (!st) st = ts;
+          const p = Math.min((ts - st) / dur, 1);
+          el.textContent = Math.round(eoe(p) * tgt).toLocaleString() + suf;
+          if (p < 1) requestAnimationFrame(step);
+          else { el.textContent = tgt.toLocaleString() + suf; el.classList.remove('cnt') }
+        });
+      });
+    }, { threshold: .3 });
+    document.querySelectorAll('.spec-num[data-target]').forEach(el => cio.observe(el));
+
+    // ============= DRAG SCROLL (testimonials + UGC) =============
+    ['testi-scroll', 'ugc-strip'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let down = false, sx, sl;
+      el.addEventListener('mousedown', e => { down = true; sx = e.pageX - el.offsetLeft; sl = el.scrollLeft });
+      el.addEventListener('mouseleave', () => down = false);
+      el.addEventListener('mouseup', () => down = false);
+      el.addEventListener('mousemove', e => { if (!down) return; e.preventDefault(); el.scrollLeft = sl - (e.pageX - el.offsetLeft - sx) * 2 });
+    });
+
+    // ============= INIT =============
+    resizeVC();
+    window.addEventListener('resize', resizeVC);
+    loadFrames();
+    animLoop(); // start smooth lerp loop
+
+    // ============= PRODUCT MODAL =============
+    const PRODUCTS = {
+      'business-cards': {
+        name: 'Soft-touch Matte Foil Cards',
+        cat: 'Business Cards',
+        rating: 4.8, reviews: 312,
+        desc: 'Make a lasting impression with our premium soft-touch matte foil business cards. A velvety matte finish with selective gold or silver foil accents — design online and we\'ll print and deliver them directly to your door.',
+        price: '₦29,500', priceNote: '₦295 each / 100 units',
+        images: [
+          'https://images.unsplash.com/photo-1718670013988-c6e3edb92345?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=800&h=800&fit=crop&auto=format&q=85'
+        ],
+        options: [
+          { label: 'Shape', type: 'btns', choices: ['Standard', 'Square', 'Round Corner', 'Oval'] },
+          { label: 'Finish', type: 'btns', choices: ['Soft-touch Matte', 'Gloss', 'Metallic Foil'] },
+          { label: 'Size', type: 'select', choices: ['3.5" × 2" (Standard)', '2" × 2" (Square)', '2.5" × 2.5"'] },
+          { label: 'Quantity', type: 'select', choices: ['100 — ₦29,500', '250 — ₦58,000', '500 — ₦98,000', '1,000 — ₦165,000'] }
+        ],
+        delivery: [
+          { icon: '🚚', label: 'Thursday, 19 Mar', fee: '₦3,500', note: 'Express delivery' },
+          { icon: '📦', label: 'Monday, 30 Mar', fee: '₦1,500', note: 'Free on orders over ₦50,000', free: true }
+        ]
+      },
+      'tote-bags': {
+        name: 'Custom Printed Tote Bags',
+        cat: 'Clothing & Bags',
+        rating: 4.7, reviews: 198,
+        desc: 'Branded tote bags your customers will actually use. Choose your colour, upload your logo, and we\'ll print and ship them straight to you. Ideal for retail, events, and gifting.',
+        price: '₦19,500', priceNote: '₦1,950 each / min. 10 bags',
+        images: [
+          'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=800&h=800&fit=crop&auto=format&q=85'
+        ],
+        options: [
+          { label: 'Colour', type: 'btns', choices: ['Natural Canvas', 'Black', 'Navy', 'White'] },
+          { label: 'Print Side', type: 'btns', choices: ['One Side', 'Both Sides'] },
+          { label: 'Size', type: 'select', choices: ['Standard (38×42cm)', 'Large (42×48cm)', 'XL (48×56cm)'] },
+          { label: 'Quantity', type: 'select', choices: ['10 — ₦19,500', '25 — ₦42,000', '50 — ₦75,000', '100 — ₦130,000'] }
+        ],
+        delivery: [
+          { icon: '🚚', label: 'Friday, 20 Mar', fee: '₦3,500', note: 'Express delivery' },
+          { icon: '📦', label: 'Tuesday, 1 Apr', fee: '₦1,500', note: 'Free on orders over ₦50,000', free: true }
+        ]
+      },
+      'ceramic-mugs': {
+        name: 'Branded Ceramic Mugs',
+        cat: 'Promotional Products',
+        rating: 4.6, reviews: 87,
+        desc: 'High-quality ceramic mugs with full-colour wrap printing. Perfect for corporate gifting, events, and merchandise. Dishwasher-safe, fade-resistant print. Design online and we deliver to you.',
+        price: '₦14,000', priceNote: '₦2,333 each / min. 6 mugs',
+        images: [
+          'https://images.unsplash.com/photo-1516390118834-21602d501886?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&h=800&fit=crop&auto=format&q=85'
+        ],
+        options: [
+          { label: 'Mug Colour', type: 'btns', choices: ['White', 'Black', 'Navy', 'Red'] },
+          { label: 'Print Side', type: 'btns', choices: ['One Side', 'Wrap (360°)'] },
+          { label: 'Size', type: 'select', choices: ['11oz (Standard)', '15oz (Large)'] },
+          { label: 'Quantity', type: 'select', choices: ['6 — ₦14,000', '12 — ₦25,000', '24 — ₦44,000', '50 — ₦82,000'] }
+        ],
+        delivery: [
+          { icon: '🚚', label: 'Saturday, 21 Mar', fee: '₦3,500', note: 'Express delivery' },
+          { icon: '📦', label: 'Wednesday, 2 Apr', fee: '₦1,500', note: 'Free on orders over ₦50,000', free: true }
+        ]
+      },
+      'die-cut-stickers': {
+        name: 'Die-Cut Custom Stickers',
+        cat: 'Stickers & Labels',
+        rating: 4.9, reviews: 445,
+        desc: 'Precision die-cut stickers in any shape you like. Waterproof vinyl, vibrant full-colour printing, UV-resistant coating. Ideal for packaging, branding, events, and personal use. Peel-and-stick, no mess.',
+        price: '₦15,500', priceNote: '₦310 each / 50 units',
+        images: [
+          'https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1574634534894-89d7576c8259?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=800&fit=crop&auto=format&q=85'
+        ],
+        options: [
+          { label: 'Shape', type: 'btns', choices: ['Custom (Die-Cut)', 'Circle', 'Square', 'Rectangle', 'Oval'] },
+          { label: 'Material', type: 'btns', choices: ['Vinyl (Waterproof)', 'Paper', 'Clear'] },
+          { label: 'Size', type: 'select', choices: ['2" × 2"', '3" × 3"', '4" × 4"', '5" × 5"', 'Custom'] },
+          { label: 'Quantity', type: 'select', choices: ['50 — ₦15,500', '100 — ₦24,000', '250 — ₦48,000', '500 — ₦82,000'] }
+        ],
+        delivery: [
+          { icon: '🚚', label: 'Thursday, 19 Mar', fee: '₦3,500', note: 'Express delivery' },
+          { icon: '📦', label: 'Monday, 30 Mar', fee: 'Free', note: 'Free standard delivery', free: true }
+        ]
+      },
+      'starter-kit': {
+        name: 'New Business Starter Kit',
+        cat: 'Curated Collections › Launch Your Business',
+        rating: 4.8, reviews: 156,
+        desc: 'Everything you need to launch your brand from day one. Includes business cards, flyers, stickers, and a branded envelope — all designed in a cohesive style. 20% off your first bundle order.',
+        price: '₦45,000', priceNote: 'Bundle price — 20% saving included',
+        images: [
+          'https://images.unsplash.com/photo-1610187224249-1c5aa1841c2c?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800&h=800&fit=crop&auto=format&q=85'
+        ],
+        options: [
+          { label: 'Bundle Includes', type: 'btns', choices: ['Business Cards (100)', 'A5 Flyers (50)', 'Stickers (25)', 'Envelopes (25)'] },
+          { label: 'Colour Theme', type: 'select', choices: ['Monochrome', 'Navy & Gold', 'Black & White', 'Custom (upload brand colours)'] },
+          { label: 'Quantity Scale', type: 'select', choices: ['Starter (as above) — ₦45,000', 'Growth ×2 — ₦82,000', 'Pro ×4 — ₦148,000'] }
+        ],
+        delivery: [
+          { icon: '🚚', label: 'Monday, 23 Mar', fee: '₦3,500', note: 'Express bundle delivery' },
+          { icon: '📦', label: 'Wednesday, 2 Apr', fee: 'Free', note: 'Free standard delivery on bundles', free: true }
+        ]
+      },
+      'event-bundle': {
+        name: 'Event-Ready Print Bundle',
+        cat: 'Curated Collections › Events & Trade Shows',
+        rating: 4.7, reviews: 93,
+        desc: 'Walk into any event looking like the most professional brand in the room. Includes a pull-up banner, tablecloth, name badges, and A4 brochures. Everything printed and delivered before your big day.',
+        price: '₦120,000', priceNote: 'Complete event pack',
+        images: [
+          'https://images.unsplash.com/photo-1574958269340-fa927503f3dd?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=800&fit=crop&auto=format&q=85'
+        ],
+        options: [
+          { label: 'Pack Includes', type: 'btns', choices: ['Pull-up Banner', 'Tablecloth', 'Name Badges (50)', 'A4 Brochures (100)'] },
+          { label: 'Banner Size', type: 'select', choices: ['Standard 85×200cm', 'Wide 100×200cm', 'Double-sided'] },
+          { label: 'Pack Scale', type: 'select', choices: ['Standard — ₦120,000', 'Double — ₦215,000', 'Full Booth — ₦390,000'] }
+        ],
+        delivery: [
+          { icon: '🚚', label: 'Monday, 23 Mar', fee: '₦5,000', note: 'Priority delivery (large format)' },
+          { icon: '📦', label: 'Wednesday, 2 Apr', fee: '₦2,500', note: 'Standard — free on orders over ₦200,000', free: false }
+        ]
+      },
+      'packaging-bundle': {
+        name: 'Brand Your Packaging',
+        cat: 'Curated Collections › E-Commerce & Retail',
+        rating: 4.9, reviews: 211,
+        desc: 'Turn every order into a branded unboxing experience. Includes custom mailer boxes, tissue paper, thank-you cards, and packaging stickers — all colour-matched to your brand. We print, you delight.',
+        price: '₦85,000', priceNote: 'E-commerce starter pack',
+        images: [
+          'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1574634534894-89d7576c8259?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=800&fit=crop&auto=format&q=85'
+        ],
+        options: [
+          { label: 'Pack Includes', type: 'btns', choices: ['Mailer Boxes (25)', 'Tissue Paper (50)', 'Thank-you Cards (50)', 'Stickers (100)'] },
+          { label: 'Box Size', type: 'select', choices: ['Small (20×15×8cm)', 'Medium (30×20×10cm)', 'Large (40×30×15cm)', 'Custom'] },
+          { label: 'Pack Scale', type: 'select', choices: ['Starter 25 — ₦85,000', 'Growth 50 — ₦150,000', 'Scale 100 — ₦260,000'] }
+        ],
+        delivery: [
+          { icon: '🚚', label: 'Tuesday, 24 Mar', fee: '₦4,500', note: 'Express packaging delivery' },
+          { icon: '📦', label: 'Thursday, 3 Apr', fee: 'Free', note: 'Free standard delivery', free: true }
+        ]
+      },
+      'marketing-bundle': {
+        name: 'Grow Your Reach Bundle',
+        cat: 'Curated Collections › Marketing Campaigns',
+        rating: 4.7, reviews: 134,
+        desc: 'Everything you need for a powerful marketing push — flyers, brochures, door hangers, and postcards. Design once, print at scale, reach more customers. We deliver anywhere in Nigeria.',
+        price: '₦60,000', priceNote: 'Marketing campaign pack',
+        images: [
+          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1612831455359-970e23a1e4e9?w=800&h=800&fit=crop&auto=format&q=85',
+          'https://images.unsplash.com/photo-1530099486328-e021101a494a?w=800&h=800&fit=crop&auto=format&q=85'
+        ],
+        options: [
+          { label: 'Pack Includes', type: 'btns', choices: ['A5 Flyers (250)', 'A4 Brochures (100)', 'Door Hangers (100)', 'Postcards (200)'] },
+          { label: 'Paper Weight', type: 'select', choices: ['Standard 130gsm', 'Premium 170gsm', 'Heavy 250gsm'] },
+          { label: 'Pack Scale', type: 'select', choices: ['Starter — ₦60,000', 'Growth ×2 — ₦108,000', 'Campaign ×5 — ₦240,000'] }
+        ],
+        delivery: [
+          { icon: '🚚', label: 'Friday, 20 Mar', fee: '₦3,500', note: 'Express delivery' },
+          { icon: '📦', label: 'Monday, 30 Mar', fee: 'Free', note: 'Free standard delivery on bundles', free: true }
+        ]
+      }
+    };
+
+    function buildStars(r) {
+      const full = Math.floor(r), half = r % 1 >= .5 ? 1 : 0, empty = 5 - full - half;
+      return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+    }
+
+    function openPDP(pid) {
+      const p = PRODUCTS[pid]; if (!p) return;
+      const ov = document.getElementById('pdp-overlay');
+      // Main image
+      document.getElementById('pdp-main-img-el').src = p.images[0];
+      document.getElementById('pdp-main-img-el').alt = p.name;
+      // Thumbnails
+      const tray = document.getElementById('pdp-thumbs');
+      tray.innerHTML = p.images.map((src, i) => `<div class="pdp-thumb${i === 0 ? ' active' : ''}" onclick="swapImg('${src}',this)"><img src="${src}" loading="lazy"></div>`).join('');
+      // Text
+      document.getElementById('pdp-crumb').innerHTML = `ENCOMIA &rsaquo; <span>${p.cat}</span>`;
+      document.getElementById('pdp-name').textContent = p.name;
+      document.getElementById('pdp-stars').innerHTML = `<span class="pdp-star-row">${buildStars(p.rating)}</span><span class="pdp-rating-num">${p.rating}</span><span class="pdp-reviews">(${p.reviews.toLocaleString()} reviews)</span>`;
+      document.getElementById('pdp-desc').textContent = p.desc;
+      document.getElementById('pdp-price-main').textContent = p.price;
+      document.getElementById('pdp-price-sub').textContent = p.priceNote;
+      // Delivery
+      const dbox = document.getElementById('pdp-delivery');
+      dbox.innerHTML = p.delivery.map(d => `<div class="pdp-del-row"><span class="pdp-del-icon">${d.icon}</span><div><div class="pdp-del-date">${d.label} &nbsp;<span class="${d.free ? 'pdp-del-free' : 'pdp-del-fee'}">${d.fee}</span></div><div style="font-size:.75rem;color:var(--text3)">${d.note}</div></div></div>`).join('');
+      // Options
+      const obox = document.getElementById('pdp-options');
+      obox.innerHTML = p.options.map(o => {
+        if (o.type === 'btns') {
+          const btns = o.choices.map((c, i) => `<button class="pdp-opt-btn${i === 0 ? ' sel' : ''}" onclick="selBtn(this)">${c}</button>`).join('');
+          return `<div><div class="pdp-opt-label">${o.label}</div><div class="pdp-opt-btns">${btns}</div></div>`;
+        } else {
+          const opts = o.choices.map((c, i) => `<option${i === 0 ? ' selected' : ''}>${c}</option>`).join('');
+          return `<div><div class="pdp-opt-label">${o.label}</div><select class="pdp-select">${opts}</select></div>`;
+        }
+      }).join('');
+      ov.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePDP() {
+      document.getElementById('pdp-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function swapImg(src, thumb) {
+      document.getElementById('pdp-main-img-el').src = src;
+      document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('active'));
+      thumb.classList.add('active');
+    }
+
+    function selBtn(btn) {
+      btn.closest('.pdp-opt-btns').querySelectorAll('.pdp-opt-btn').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+    }
+
+    // Wire up all product cards
+    document.querySelectorAll('[data-pid]').forEach(card => {
+      card.addEventListener('click', () => openPDP(card.dataset.pid));
+    });
+
+    // Close on backdrop click
+    document.getElementById('pdp-overlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('pdp-overlay')) closePDP();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePDP() });
+  </script>
+
+  <!-- PRODUCT DETAIL MODAL -->
+  <div id="pdp-overlay">
+    <div id="pdp-modal">
+      <!-- Left: images -->
+      <div class="pdp-left">
+        <div class="pdp-main-img"><img id="pdp-main-img-el" src="" alt=""></div>
+        <div class="pdp-thumbs" id="pdp-thumbs"></div>
+      </div>
+      <!-- Right: details -->
+      <div class="pdp-right">
+        <button class="pdp-close-right" onclick="closePDP()">✕</button>
+        <div class="pdp-crumb" id="pdp-crumb"></div>
+        <div class="pdp-name" id="pdp-name"></div>
+        <div class="pdp-stars" id="pdp-stars"></div>
+        <div class="pdp-desc" id="pdp-desc"></div>
+        <div class="pdp-price-block">
+          <div class="pdp-price-main" id="pdp-price-main"></div>
+          <div class="pdp-price-sub" id="pdp-price-sub"></div>
+        </div>
+        <div class="pdp-delivery" id="pdp-delivery"></div>
+        <div class="pdp-options" id="pdp-options"></div>
+        <div class="pdp-ctas">
+          <button class="pdp-btn-main">Browse our templates &#x1F4CB;</button>
+          <button class="pdp-btn-sec">Upload your design &#x2191;</button>
+        </div>
+        <div class="pdp-paypal">Pay in 4 interest-free payments with <strong>PayPal</strong></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
